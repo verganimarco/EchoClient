@@ -1,39 +1,37 @@
 package echoclient;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 
-public class EchoClient {
-     public static void main (String [] args){
-          try {
-               Socket soc = new Socket("localhost",4444);
-               PrintWriter out = new PrintWriter(soc.getOutputStream(),true);
-               BufferedReader in = new BufferedReader(new InputStreamReader(soc.getInputStream()));
-               BufferedReader stdIn= new BufferedReader(new InputStreamReader(System.in));
-               String rline;
-               while((rline=stdIn.readLine())!=null){
-                    out.println(rline);
-                    out.flush();
+public class EchoClient{
+    public static void main(String[] args) throws IOException{
+        Socket s = null;
+        BufferedReader in = null;
+        PrintWriter out = null;
+        boolean fine=false;
+        try{
+            s = new Socket("localhost",2000);
+            in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            out = new PrintWriter(new OutputStreamWriter(s.getOutputStream()),true);
+        }catch(IOException e){}
+        BufferedReader std_in=new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("maiuscole:off");
+        while(fine==false){
+            String stringa=std_in.readLine();
+            if(stringa.equals("fine")){
+                fine=true;
+            }
+            out.println(stringa);
+            if(!stringa.equals("fine")&&!stringa.equals("maiuscole:on")&&!stringa.equals("maiuscole:off")){
+                    try{
                     System.out.println(in.readLine());
-                    String fromServer = in.readLine();
-                    if(fromServer.equals("fine")){
-                        out.println("exit");
-                    }                    
-               }
-               in.close();
-               out.close();
-               stdIn.close();
-               soc.close();
-          } catch (UnknownHostException e) {
-               e.printStackTrace();
-               System.exit(1);
-          } catch (IOException e) {
-               e.printStackTrace();
-               System.exit(2);
-          }
-     }
+                    }catch(IOException e){}
+            }
+        }
+    }
 }
